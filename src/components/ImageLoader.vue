@@ -26,7 +26,7 @@
                     :key="index"
                     class="image-loader__error-text"
                 >
-                    {{url}}<strong>{{errorText}}</strong>
+                    {{url}}<strong> не корректный URL</strong>
                 </span>
             </template>
             <span
@@ -49,13 +49,13 @@ export default {
             newUrl: '',
             isError: false,
             isLoading: false,
-            errorText: '',
-            errorUrls: []
+            errorUrls: [],
+            counterImg: 0,
         }
     },
     methods: {
         checkLink() {
-            this.resetErrors();
+            this.resetData();
 
             if(this.newUrl === '') {
                 this.isError = true;
@@ -67,78 +67,57 @@ export default {
             if(/\.json$/.test(this.newUrl)) {
                 this.getJson();
             } else {
-                //this.getImg();
-                this.checkImgSrc(this.newUrl, false);
+                this.checkImgSrc(this.newUrl);
             }
         },
-        resetErrors() {
+        resetData() {
             this.isError = false;
             this.errorUrls = [];
-            this.errorText = '';
+            this.counterImg = 0;
         },
         setError(url) {
             this.isError = true;
             this.errorUrls.push(url);
-            this.errorText = ' не корректный URL'
-            this.isLoading = false;
         },
-        // setErrorImg(url) {
-        //     this.isError = true;
-        //     this.errorUrls.push(url);
-        //     this.errorText = ' не является изображением'
-        //     this.isLoading = false;
-        // },
         getJson() {
             axios.get(this.newUrl)
                 .then( response => {
                     if(!response.data.galleryImages){
-                        this.setError();
+                        this.setError(this.newUrl);
+                        this.isLoading = false;
                     }
                     else {
                         const imgList = response.data.galleryImages;
-                        imgList.forEach((item, index) => {
+                        imgList.forEach(item => {
+                            console.log(item.url);
                             this.newUrl = item.url;
-                            const keepsLoading = index !== imgList.length - 1;
-                            console.log(keepsLoading);
-                            //this.getImg(this.newUrl);
-                            this.checkImgSrc(this.newUrl, keepsLoading)
+                            this.checkImgSrc(this.newUrl, imgList.length)
                         });
                     }
                 })
                 .catch(error => {
                     this.setError(this.newUrl);
+                    this.isLoading = false;
                     console.log(error);
                 })
         },
-        checkImgSrc(src, keepsLoading) {
+        checkImgSrc(src, lengthImgList = 1) {
             const img = new Image();
             img.src = src;
             img.onload = () => {
                 this.addImg(src);
-                this.isLoading = keepsLoading;
+                this.checkIsLastImg(lengthImgList, ++this.counterImg);
             }
             img.onerror = () => {
                 this.setError(src);
+                this.checkIsLastImg(lengthImgList, ++this.counterImg);
             }
         },
-        // getImg(url = this.newUrl) {
-        //     this.isLoading = true;
-
-        //     axios.head(url, { responseType:"blob" })
-        //         .then( response => {
-        //             if(!/^image/.test(response.data.type)) {
-        //                 this.setErrorImg(url);
-        //             }
-        //             else {
-        //                 this.addImg(url);
-        //                 this.isLoading = false;
-        //             }
-        //         })
-        //         .catch(error => {
-        //             this.setError(url)
-        //             console.log(error);
-        //         })
-        // },
+        checkIsLastImg(lengthImgList, counterImg){
+            if(counterImg === lengthImgList) {
+                this.isLoading = false;
+            }
+        },
         addImg(data) {
             eventEmitter.$emit('addImg', data);
             this.newUrl = '';
