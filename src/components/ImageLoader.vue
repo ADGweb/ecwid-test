@@ -5,7 +5,7 @@
             class="image-loader__wrapper"
         >
             <input
-                v-model="newUrl"
+                v-model="urlOfAddedImage"
                 type="text"
                 class="image-loader__input"
                 placeholder="Введите URL"
@@ -26,7 +26,7 @@
                     :key="index"
                     class="image-loader__error-text"
                 >
-                    {{url}}<strong> не корректный URL</strong>
+                    {{url}}<strong> некорректный URL</strong>
                 </span>
             </template>
             <span
@@ -46,81 +46,80 @@ export default {
     name: 'ImageLoader',
     data() {
         return {
-            newUrl: '',
+            urlOfAddedImage: '',
             isError: false,
             isLoading: false,
             errorUrls: [],
-            counterImg: 0,
+            counterImage: 0,
         }
     },
     methods: {
         checkLink() {
             this.resetData();
 
-            if(this.newUrl === '') {
+            if(this.urlOfAddedImage === '') {
                 this.isError = true;
                 return;
             }
 
             this.isLoading = true;
 
-            if(/\.json$/.test(this.newUrl)) {
+            if(/\.json$/.test(this.urlOfAddedImage)) {
                 this.getJson();
             } else {
-                this.checkImgSrc(this.newUrl);
+                this.checkImageSrc(this.urlOfAddedImage);
             }
         },
         resetData() {
             this.isError = false;
             this.errorUrls = [];
-            this.counterImg = 0;
+            this.counterImage = 0;
         },
         setError(url) {
             this.isError = true;
             this.errorUrls.push(url);
         },
         getJson() {
-            axios.get(this.newUrl)
+            axios.get(this.urlOfAddedImage)
                 .then( response => {
                     if(!response.data.galleryImages){
-                        this.setError(this.newUrl);
+                        this.setError(this.urlOfAddedImage);
                         this.isLoading = false;
                     }
                     else {
-                        const imgList = response.data.galleryImages;
-                        imgList.forEach(item => {
-                            console.log(item.url);
-                            this.newUrl = item.url;
-                            this.checkImgSrc(this.newUrl, imgList.length)
+                        const imageList = response.data.galleryImages;
+                        imageList.forEach(item => {
+                            this.urlOfAddedImage = item.url;
+                            this.checkImageSrc(this.urlOfAddedImage, imageList.length)
                         });
                     }
                 })
                 .catch(error => {
-                    this.setError(this.newUrl);
+                    this.setError(this.urlOfAddedImage);
                     this.isLoading = false;
                     console.log(error);
                 })
         },
-        checkImgSrc(src, lengthImgList = 1) {
+        checkImageSrc(imgUrl, lengthImageList = 1) {
             const img = new Image();
-            img.src = src;
+            img.src = imgUrl;
             img.onload = () => {
-                this.addImg(src);
-                this.checkIsLastImg(lengthImgList, ++this.counterImg);
+                this.addImage(imgUrl);
+                this.checkIsLastImage(lengthImageList, ++this.counterImage);
             }
             img.onerror = () => {
-                this.setError(src);
-                this.checkIsLastImg(lengthImgList, ++this.counterImg);
+                this.setError(imgUrl);
+                this.checkIsLastImage(lengthImageList, ++this.counterImage);
             }
         },
-        checkIsLastImg(lengthImgList, counterImg){
-            if(counterImg === lengthImgList) {
+        checkIsLastImage(lengthImageList, counterImage){
+            if(counterImage === lengthImageList) {
                 this.isLoading = false;
             }
         },
-        addImg(data) {
-            eventEmitter.$emit('addImg', data);
-            this.newUrl = '';
+        addImage(imgUrl) {
+            eventEmitter.$emit('addImage', imgUrl);
+            this.urlOfAddedImage = '';
         },
     }
 }
@@ -181,8 +180,12 @@ export default {
     }
 
     &__information {
-        min-height: 64px;
+        min-height: 36px;
         margin: 12px 0;
+
+        @include desktop-all {
+            min-height: 48px;
+        }
     }
 
     &__error-text {
@@ -194,11 +197,16 @@ export default {
     &__loader {
         display: block;
         position: relative;
-        width: 64px;
-        height: 64px;
+        width: 36px;
+        height: 36px;
         margin: auto;
         background-image: url('../assets/img/loader.svg');
         background-size: 100%;
+
+        @include desktop-all {
+            width: 48px;
+            height: 48px;
+        }
     }
 }
 </style>

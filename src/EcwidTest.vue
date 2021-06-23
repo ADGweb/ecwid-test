@@ -2,62 +2,85 @@
     <div class="ecwid-test">
         <h1 class="ecwid-test__title">Галерея изображений</h1>
         <image-loader/>
-        <image-gallery/>
+        <images-gallery/>
         <div
             class="ecwid-test__examples"
             ref="examples"
         >
             <h2>Примеры URL</h2>
             <h3>Пример ссылки на Json файл:</h3>
-            <p class="ecwid-test__text">https://don16obqbay2c.cloudfront.net/frontend-test-task/gallery-images.json</p>
+            <button class="ecwid-test__button-copy">Скопировать ссылку на JSON</button>
+            <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/gallery-images.json">
             <h3>Примеры ссылок на картинки:</h3>
             <ol class="ecwid-test__list">
-                <li class="ecwid-test__text">https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964008.jpg</li>
-                <li class="ecwid-test__text">https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964014.jpg</li>
-                <li class="ecwid-test__text">https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964020.jpg</li>
-                <li class="ecwid-test__text">https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964012.jpg</li>
+                <li class="ecwid-test__text">
+                    <button class="ecwid-test__button-copy">Скопировать ссылку 1</button>
+                    <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964008.jpg">
+                </li>
+                <li class="ecwid-test__text">
+                    <button class="ecwid-test__button-copy">Скопировать ссылку 2</button>
+                    <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964014.jpg">
+                </li>
+                <li class="ecwid-test__text">
+                    <button class="ecwid-test__button-copy">Скопировать ссылку 3</button>
+                    <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964020.jpg">
+                </li>
+                <li class="ecwid-test__text">
+                    <button class="ecwid-test__button-copy">Скопировать ссылку 4</button>
+                    <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964012.jpg">
+                </li>
             </ol>
-            <h3>Примеры картинок для Drag and Drop</h3>
-
-            <img
+            <h3>Примеры картинок для Drag and Drop:</h3>
+            <div class="ecwid-test__img-wrapper">
+                <img
                 src="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964020.jpg"
                 class="ecwid-test__img"
             >
             <img
-                src="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964012.jpg"
+                src="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964011.jpg"
                 class="ecwid-test__img"
             >
+            <img
+                src="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/493550745.jpg"
+                class="ecwid-test__img"
+            >
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import ImageLoader from './components/ImageLoader.vue'
-import ImageGallery from './components/ImageGallery.vue'
+import ImagesGallery from './components/ImagesGallery.vue'
 import {eventEmitter} from './main'
-//import {dragAndDrop} from './modules/drag-and-drop'
 
 export default {
     name: 'EcwidTest',
     components: {
         ImageLoader,
-        ImageGallery
+        ImagesGallery
     },
     mounted() {
         const images = this.$refs.examples.querySelectorAll('.ecwid-test__img');
+        const buttons = this.$refs.examples.querySelectorAll('.ecwid-test__button-copy');
 
-        this.setDraggableAttribute(images);
         images.forEach(img => {
+            img.setAttribute('draggable', 'true');
             img.addEventListener('dragstart', this.dragStart);
             img.addEventListener('dragend', this.dragEnd);
         });
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buttontext = button.textContent;
+                button.nextElementSibling.select();
+                document.execCommand('copy');
+                button.textContent = "Скопированно в буфер";
+                setTimeout(() => {button.textContent = buttontext}, 1000);
+            })
+        })
     },
     methods: {
-        setDraggableAttribute(images) {
-            images.forEach(img => {
-                img.setAttribute('draggable', 'true');
-            });
-        },
         dragStart(event) {
             eventEmitter.$emit('dragStart', event.target);
         },
@@ -90,9 +113,13 @@ export default {
     }
 
     &__text {
-        font-size: 15px;
+        font-size: 12px;
 
-        @include mobile-l {
+        @include mobile-s {
+            font-size: 15px;
+        }
+
+        @include mobile-ml {
             font-size: 18px;
         }
 
@@ -106,14 +133,66 @@ export default {
         list-style: none;
     }
 
+    &__button-copy {
+        padding: 12px 18px;
+        width: 100%;
+        margin-bottom: 12px;
+        background-color: #00fdc7;
+        border: 1px solid;
+        border-radius: 3px;
+        cursor: pointer;
+
+        @include desktop-all {
+            width: 240px;
+        }
+
+        &:hover {
+            background-color: #00ecba;
+        }
+
+        &:active {
+            background-color: #5cffdc;
+        }
+
+    }
+
+    &__input-example {
+        position: absolute;
+        clip: rect(0 0 0 0);
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+    }
+
+    &__img-wrapper {
+        display: flex;
+        flex-direction: column;
+
+        @include mobile-l {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        @include desktop-all {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
+
     &__img {
-        height: 180px;
         cursor: grab;
+
+        @include mobile-l {
+            width: 25%;
+        }
+
+        @include desktop-all {
+            width: 25%;
+        }
 
         &:active {
             cursor: grabbing;
         }
-
     }
 }
 
