@@ -43,8 +43,7 @@ export default {
                 key: this.counterKey++,
             }
 
-            this.dataImgs.unshift(dataImg);
-            //this.dataImgs = [dataImg, ...this.dataImgs]; можно так, но unshift думаю более читаемый
+            this.dataImgs.push(dataImg);
         });
     },
     beforeMount() {
@@ -63,7 +62,7 @@ export default {
                 url: dragedImage.src,
                 key: this.counterKey++,
             }
-            this.dataImgs.unshift(dataImg);
+            this.dataImgs.push(dataImg);
         })
 
         eventEmitter.$on('dragStart', img => {
