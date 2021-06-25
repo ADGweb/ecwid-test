@@ -75,7 +75,7 @@ export default {
                 const buttontext = button.textContent;
                 button.nextElementSibling.select();
                 document.execCommand('copy');
-                button.textContent = "Скопированно в буфер";
+                button.textContent = "Скопировано в буфер";
                 setTimeout(() => {button.textContent = buttontext}, 1000);
             })
         })
