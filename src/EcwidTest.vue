@@ -11,7 +11,7 @@
             <h3>Пример ссылки на Json файл:</h3>
             <button class="ecwid-test__button-copy">Скопировать ссылку на JSON</button>
             <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/gallery-images.json">
-            <h3>Примеры ссылок на картинки:</h3>
+            <h3>Примеры ссылок на изображения:</h3>
             <ol class="ecwid-test__list">
                 <li class="ecwid-test__text">
                     <button class="ecwid-test__button-copy">Скопировать ссылку 1</button>
@@ -30,7 +30,7 @@
                     <input type="text" class="ecwid-test__input-example" value="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964012.jpg">
                 </li>
             </ol>
-            <h3>Примеры картинок для Drag and Drop:</h3>
+            <h3>Примеры изображений для Drag and Drop:</h3>
             <div class="ecwid-test__img-wrapper">
                 <img
                 src="https://don16obqbay2c.cloudfront.net/frontend-test-task/images/448964020.jpg"
