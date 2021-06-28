@@ -111,6 +111,7 @@ export default {
 
             for(const img of imageList){
                 img.style.height = `${maxImageHeight}px`;
+                img.parentElement.removeAttribute('style');
                 widthLine += img.clientWidth + 12;
                 arrImageLine.push(img);
                 if(widthLine > wrapperWidth) {
@@ -121,9 +122,19 @@ export default {
                 }
             }
 
-            arrImageLine.forEach(img => {
-                img.style.height = `${lastImageHeight}px`;
-            })
+            if(arrImageLine.length) {
+                widthLine = 0;
+
+                arrImageLine.forEach(img => {
+                    img.style.height = `${lastImageHeight}px`;
+                    widthLine += img.clientWidth + 12;
+                })
+
+                const margin = wrapperWidth - widthLine + 5;
+                arrImageLine[arrImageLine.length - 1].parentElement.style.marginRight = `${margin}px`;
+
+                console.log(arrImageLine, widthLine, wrapperWidth, arrImageLine[arrImageLine.length - 1]);
+            }
         },
         updatImagesSizeInLine(widthLine, arrImageLine, wrapperWidth) {
             let newWidthLine = 0;
@@ -166,6 +177,7 @@ export default {
 
     &__wrapper {
         display: flex;
+        justify-content: space-between;
         flex-wrap: wrap;
         margin: -6px;
     }
@@ -173,6 +185,7 @@ export default {
     &__image-wrapper {
         display: flex;
         position: relative;
+        margin: 6px;
 
         @include desktop-all {
             &:hover .images-gallery__image {
@@ -195,10 +208,6 @@ export default {
 
             }
         }
-    }
-
-    &__image {
-        margin: 6px;
     }
 
     &__image-delete {
